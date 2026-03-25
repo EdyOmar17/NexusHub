@@ -77,8 +77,14 @@
             </form>
 
             <div class="login-footer">
-                <p>&copy; 2026 Nexus Management System. <br> Todos los derechos reservados.</p>
-            </div>
+            <p>
+                &copy; 2026 
+                Desarrollado por 
+                <a href="https://my-professional-website.onrender.com" target="_blank">
+                    MyProfessionalWebsite
+                </a>
+                <br> Todos los derechos reservados.
+            </p>
         </div>
     </div>
 

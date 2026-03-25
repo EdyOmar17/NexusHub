@@ -365,6 +365,16 @@ label {
     line-height: 1.6;
 }
 
+.login-footer a {
+    color: #00f7ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
 /* ============================================================
    RESPONSIVE — MOBILE (≤768px)
    ============================================================ */
