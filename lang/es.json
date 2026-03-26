@@ -76,5 +76,17 @@
     "Sitio Recuperado": "Sitio Recuperado",
     "está": "está",
     "No tienes notificaciones pendientes": "No tienes notificaciones pendientes",
-    "Ver todas las notificaciones": "Ver todas las notificaciones"
+    "Ver todas las notificaciones": "Ver todas las notificaciones",
+    "¿Eliminar Sitio?": "¿Eliminar Sitio?",
+    "¿Estás seguro de que deseas eliminar este sitio web? Esta acción no se puede deshacer.": "¿Estás seguro de que deseas eliminar este sitio web? Esta acción no se puede deshacer.",
+    "¿Cambiar Idioma?": "¿Cambiar Idioma?",
+    "¿Estás seguro de que deseas cambiar el idioma del sistema? La página se recargará para aplicar los cambios.": "¿Estás seguro de que deseas cambiar el idioma del sistema? La página se recargará para aplicar los cambios.",
+    "Cambiar": "Cambiar",
+    "Gestión de Usuarios del Sistema": "Gestión de Usuarios del Sistema",
+    "Gestión de Usuarios": "Gestión de Usuarios",
+    "Admin Principal": "Admin Principal",
+    "¿Eliminar Usuario?": "¿Eliminar Usuario?",
+    "¿Estás seguro de que deseas eliminar a": "¿Estás seguro de que deseas eliminar a",
+    "Este usuario ya no podrá acceder al sistema NexusHub.": "Este usuario ya no podrá acceder al sistema NexusHub.",
+    "Eliminar Usuario": "Eliminar Usuario"
 }

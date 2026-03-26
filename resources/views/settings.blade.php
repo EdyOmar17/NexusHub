@@ -102,13 +102,13 @@
                             @if(App::getLocale() == 'en') English @else Español @endif
                         </span>
                     </div>
-                    <form action="{{ route('settings.language.update') }}" method="POST" style="display:flex; gap:10px;">
+                    <form action="{{ route('settings.language.update') }}" method="POST" id="language-form" style="display:flex; gap:10px;">
                         @csrf
-                        <select name="locale" class="settings-locale-select">
+                        <select name="locale" class="settings-locale-select" id="locale-select">
                             <option value="es" {{ App::getLocale() == 'es' ? 'selected' : '' }}>{{ __('Español') }}</option>
                             <option value="en" {{ App::getLocale() == 'en' ? 'selected' : '' }}>{{ __('Inglés') }}</option>
                         </select>
-                        <button type="submit" class="btn-primary" style="padding: 5px 10px; font-size: 0.85rem;">{{ __('Guardar Idioma') }}</button>
+                        <button type="button" class="btn-primary" id="btn-language-submit" style="padding: 5px 10px; font-size: 0.85rem;">{{ __('Guardar Idioma') }}</button>
                     </form>
                 </div>
             </div>
@@ -133,6 +133,23 @@
             </div>
             <p class="node-helper-text">{{ __('Para cambiar nombres de servidores, contacta con soporte técnico (Core Engine).') }}</p>
         </section>
+    </div>
+</div>
+
+<!-- Language Confirmation Modal -->
+<div id="language-confirm-modal" class="modal-overlay d-none" style="z-index: 1100;">
+    <div class="modal-content glass-card delete-modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+        <div class="delete-icon-wrapper" style="margin-bottom: 1.5rem; background: rgba(0, 242, 254, 0.1);">
+            <i data-lucide="languages" style="width: 50px; height: 50px; color: var(--primary); filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.3));"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-main);">{{ __('¿Cambiar Idioma?') }}</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
+            {{ __('¿Estás seguro de que deseas cambiar el idioma del sistema? La página se recargará para aplicar los cambios.') }}
+        </p>
+        <div class="modal-footer" style="justify-content: center; gap: 1rem; border-top: none; padding-top: 0;">
+            <button type="button" class="btn-secondary" id="btn-cancel-lang" style="min-width: 120px;">{{ __('Cancelar') }}</button>
+            <button type="button" class="btn-primary" id="btn-confirm-lang" style="min-width: 120px;">{{ __('Cambiar') }}</button>
+        </div>
     </div>
 </div>
 @endsection
@@ -364,6 +381,34 @@
             lucide.createIcons();
         }
     });
+
+    // Language change confirmation
+    const langForm = document.getElementById('language-form');
+    const langSubmitBtn = document.getElementById('btn-language-submit');
+    const langConfirmModal = document.getElementById('language-confirm-modal');
+    const langCancelBtn = document.getElementById('btn-cancel-lang');
+    const langConfirmBtn = document.getElementById('btn-confirm-lang');
+
+    if (langSubmitBtn && langConfirmModal) {
+        langSubmitBtn.addEventListener('click', () => {
+            langConfirmModal.classList.remove('d-none');
+        });
+
+        langCancelBtn.addEventListener('click', () => {
+            langConfirmModal.classList.add('d-none');
+        });
+
+        langConfirmBtn.addEventListener('click', () => {
+            if (langForm) langForm.submit();
+        });
+
+        // Close on overlay click
+        langConfirmModal.addEventListener('click', (e) => {
+            if (e.target === langConfirmModal) {
+                langConfirmModal.classList.add('d-none');
+            }
+        });
+    }
 </script>
 @endsection
 <!-- Desarrollado por: Edy Reyes -->

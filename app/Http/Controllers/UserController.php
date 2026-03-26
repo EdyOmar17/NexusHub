@@ -45,4 +45,27 @@ class UserController extends Controller
 
         return redirect()->route('users.create')->with('success', 'Usuario creado exitosamente. Ya puede iniciar sesión en el sistema.');
     }
+
+    /**
+     * Remove the specified user from storage.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(User $user)
+    {
+        // Prevent admin from deleting themselves
+        if ($user->email === 'edy.omar2005@gmail.com') {
+            return back()->with('error', 'No puedes eliminar al administrador principal del sistema.');
+        }
+
+        // Prevent deleting current user
+        if (auth()->id() === $user->id) {
+            return back()->with('error', 'No puedes eliminar tu propio usuario mientras estás en sesión.');
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'Usuario eliminado correctamente del sistema NexusHub.');
+    }
 }

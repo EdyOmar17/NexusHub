@@ -207,10 +207,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (btnDeleteTrigger && deleteForm) {
+    // --- DELETE MODAL LOGIC ---
+    const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    const btnConfirmDeleteAction = document.getElementById('btn-confirm-delete-action');
+
+    if (btnDeleteTrigger && deleteForm && deleteConfirmModal) {
         btnDeleteTrigger.addEventListener('click', () => {
-            if (confirm('¿Estás seguro de que deseas eliminar este sitio web?')) {
-                deleteForm.submit();
+            deleteConfirmModal.classList.remove('d-none');
+        });
+
+        btnCancelDelete.addEventListener('click', () => {
+            deleteConfirmModal.classList.add('d-none');
+        });
+
+        btnConfirmDeleteAction.addEventListener('click', () => {
+            deleteForm.submit();
+        });
+
+        // Close on overlay click
+        deleteConfirmModal.addEventListener('click', (e) => {
+            if (e.target === deleteConfirmModal) {
+                deleteConfirmModal.classList.add('d-none');
             }
         });
     }

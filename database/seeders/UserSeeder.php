@@ -14,9 +14,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@nexushub.com'],
+            ['email' => 'edy.omar2005@gmail.com'],
             [
-                'name' => 'Admin User',
+                'name' => 'Edy Reyes - Administrador',
                 'password' => Hash::make('Admin123!'), // 8+ chars, letters, numbers, symbols
             ]
         );

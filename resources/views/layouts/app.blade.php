@@ -33,6 +33,13 @@
                 </div>
                 @endif
 
+                @if(session('error'))
+                <div class="alert-error">
+                    <i data-lucide="alert-triangle"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                @endif
+
                 @if($errors->any())
                 <div class="alert-error">
                     <i data-lucide="alert-triangle"></i>

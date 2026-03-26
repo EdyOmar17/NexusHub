@@ -32,6 +32,12 @@
         </a>
         
         <div class="nav-section">{{ __('SISTEMA') }}</div>
+        @if(auth()->user()->email === 'edy.omar2005@gmail.com')
+        <a href="{{ route('dashboard') }}#admin-user-management" class="nav-link">
+            <i data-lucide="users"></i>
+            <span>{{ __('Gestión de Usuarios') }}</span>
+        </a>
+        @endif
         <a href="{{ route('users.create') }}" class="nav-link {{ Route::is('users.create') ? 'active' : '' }}">
             <i data-lucide="user-plus"></i>
             <span>{{ __('Crear Usuario') }}</span>

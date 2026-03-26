@@ -2,6 +2,180 @@
 
 @section('title', 'NexusHub | Dashboard')
 
+@section('styles')
+<style>
+    /* Admin Management Section Responsive Styles */
+    .admin-management-container {
+        margin-bottom: 4rem;
+        padding: 2.5rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+    }
+
+    .admin-management-header {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid rgba(0, 242, 254, 0.1);
+        padding-bottom: 1rem;
+    }
+
+    .admin-management-header .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0;
+    }
+
+    .admin-management-header .section-title i {
+        color: var(--primary);
+        filter: drop-shadow(0 0 8px var(--primary-glow));
+    }
+
+    .admin-management-header p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .user-management-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .user-item {
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.25rem;
+        min-height: 140px;
+        justify-content: space-between;
+    }
+
+    .user-card-main {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.25rem;
+        min-width: 0;
+    }
+
+    .user-avatar-wrapper {
+        background: rgba(165, 180, 252, 0.1);
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        border: 1px solid rgba(165, 180, 252, 0.2);
+    }
+
+    .user-avatar-wrapper i {
+        color: #a5b4fc;
+        width: 24px;
+        height: 24px;
+    }
+
+    .user-details {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .user-name-text {
+        display: block;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .user-meta-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .user-email-badge, .user-admin-badge {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+    }
+
+    .user-email-badge {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text-muted);
+    }
+
+    .user-admin-badge {
+        background: rgba(0, 242, 254, 0.1);
+        color: var(--primary);
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+
+    .user-card-actions {
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 1rem;
+    }
+
+    .btn-delete-user-trigger {
+        background: rgba(234, 84, 85, 0.1);
+        color: var(--danger);
+        border: 1.5px solid rgba(234, 84, 85, 0.2);
+        padding: 8px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+
+    /* Responsive Overrides */
+    @media (max-width: 768px) {
+        .admin-management-container {
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            border-radius: 20px;
+        }
+
+        .user-management-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .user-name-text {
+            font-size: 1.05rem;
+        }
+
+        .user-email-badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+        }
+
+        .btn-delete-user-trigger {
+            width: 100%;
+            justify-content: center;
+            padding: 10px;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
 <!-- Dashboard Hero -->
 <section class="hero-section">
@@ -21,6 +195,58 @@
         </div>
     </div>
 </section>
+
+@if(auth()->user()->email === 'edy.omar2005@gmail.com')
+<!-- User Management Section (Admin Only) -->
+<section class="admin-management-container" id="admin-user-management">
+    <div class="admin-management-header">
+        <div class="section-title">
+            <i data-lucide="shield-check"></i>
+            {{ __('Terminal de Gestión de Usuarios') }}
+        </div>
+        <p>{{ __('Administra los accesos autorizados al sistema NexusHub.') }}</p>
+    </div>
+
+    <div class="user-management-grid">
+        @foreach($users as $user)
+        <div class="website-item user-item" 
+             data-id="{{ $user->id }}"
+             data-name="{{ $user->name }}">
+             
+             <div class="user-card-main">
+                <div class="user-avatar-wrapper">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name-text">{{ $user->name }}</span>
+                    <div class="user-meta-info">
+                        <span class="user-email-badge">
+                            <i data-lucide="mail"></i>
+                            {{ $user->email }}
+                        </span>
+                        @if($user->email === 'edy.omar2005@gmail.com')
+                            <span class="user-admin-badge">
+                                <i data-lucide="shield"></i>
+                                {{ __('Admin Principal') }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
+             </div>
+
+             @if($user->email !== 'edy.omar2005@gmail.com' && auth()->id() !== $user->id)
+             <div class="user-card-actions">
+                     <button type="button" class="btn-delete-user-trigger" data-id="{{ $user->id }}" data-name="{{ $user->name }}">
+                         <i data-lucide="user-x"></i>
+                         <span>{{ __('Eliminar Usuario') }}</span>
+                     </button>
+             </div>
+             @endif
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
 
 <!-- Server Grid -->
 <section class="server-grid">
@@ -210,6 +436,46 @@
         </form>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-confirm-modal" class="modal-overlay d-none" style="z-index: 1100;">
+    <div class="modal-content glass-card delete-modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+        <div class="delete-icon-wrapper" style="margin-bottom: 1.5rem;">
+            <i data-lucide="trash-2" style="width: 50px; height: 50px; color: var(--danger); filter: drop-shadow(0 0 10px rgba(234, 84, 85, 0.3));"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-main);">{{ __('¿Eliminar Sitio?') }}</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
+            {{ __('¿Estás seguro de que deseas eliminar este sitio web? Esta acción no se puede deshacer.') }}
+        </p>
+        <div class="modal-footer" style="justify-content: center; gap: 1rem; border-top: none; padding-top: 0;">
+            <button type="button" class="btn-secondary" id="btn-cancel-delete" style="min-width: 120px;">{{ __('Cancelar') }}</button>
+            <button type="button" class="btn-danger" id="btn-confirm-delete-action" style="min-width: 120px;">{{ __('Eliminar') }}</button>
+        </div>
+    </div>
+</div>
+
+@if(auth()->user()->email === 'edy.omar2005@gmail.com')
+<!-- User Delete Confirmation Modal -->
+<div id="delete-user-confirm-modal" class="modal-overlay d-none" style="z-index: 1200;">
+    <div class="modal-content glass-card delete-modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+        <div class="delete-icon-wrapper" style="margin-bottom: 1.5rem; background: rgba(234, 84, 85, 0.1);">
+            <i data-lucide="user-x" style="width: 50px; height: 50px; color: var(--danger); filter: drop-shadow(0 0 10px rgba(234, 84, 85, 0.3));"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-main);">{{ __('¿Eliminar Usuario?') }}</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
+            {{ __('¿Estás seguro de que deseas eliminar a') }} <strong id="delete-user-name" style="color: var(--text-main);"></strong>? {{ __('Este usuario ya no podrá acceder al sistema NexusHub.') }}
+        </p>
+        <div class="modal-footer" style="justify-content: center; gap: 1rem; border-top: none; padding-top: 0;">
+            <button type="button" class="btn-secondary" id="btn-cancel-user-delete" style="min-width: 120px;">{{ __('Cancelar') }}</button>
+            <form id="delete-user-form" method="POST" action="" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-danger" style="min-width: 120px;">{{ __('Eliminar Usuario') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
 
 @section('scripts')
@@ -227,6 +493,36 @@
             lucide.createIcons();
         }
     });
+
+    @if(auth()->user()->email === 'edy.omar2005@gmail.com')
+    // User deletion logic
+    const userDeleteModal = document.getElementById('delete-user-confirm-modal');
+    const deleteUserForm = document.getElementById('delete-user-form');
+    const deleteUserNameSpan = document.getElementById('delete-user-name');
+    const cancelUserDeleteBtn = document.getElementById('btn-cancel-user-delete');
+
+    document.addEventListener('click', function(e) {
+        const trigger = e.target.closest('.btn-delete-user-trigger');
+        if (trigger) {
+            const userId = trigger.dataset.id;
+            const userName = trigger.dataset.name;
+            
+            deleteUserNameSpan.textContent = userName;
+            deleteUserForm.action = `/users/${userId}`;
+            userDeleteModal.classList.remove('d-none');
+        }
+    });
+
+    cancelUserDeleteBtn.addEventListener('click', () => {
+        userDeleteModal.classList.add('d-none');
+    });
+
+    userDeleteModal.addEventListener('click', (e) => {
+        if (e.target === userDeleteModal) {
+            userDeleteModal.classList.add('d-none');
+        }
+    });
+    @endif
 </script>
 @endsection
 <!-- Desarrollado por: Edy Reyes -->

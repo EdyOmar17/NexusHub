@@ -33,7 +33,11 @@ Route::get('/dashboard', function () {
         return redirect()->route('root');
     }
     $websites = App\Models\Website::all();
-    return view('dashboard', compact('websites'));
+    $users = [];
+    if (Auth::user()->email === 'edy.omar2005@gmail.com') {
+        $users = App\Models\User::all();
+    }
+    return view('dashboard', compact('websites', 'users'));
 })->name('dashboard');
 
 // Settings routes
@@ -51,6 +55,7 @@ Route::delete('/websites/{website}', [WebsiteController::class, 'destroy'])->nam
 use App\Http\Controllers\UserController;
 Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
 // Login GET route (redirect to root)
 Route::get('/login', function () {
