@@ -102,20 +102,18 @@
     
     @yield('modals')
 
-    <!-- WebSocket config for Laravel Echo with Reverb -->
+    <!-- WebSocket config for Laravel Echo with Pusher -->
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.min.js"></script>
 
     <script>
-        // Configuración de Echo para tiempo real
+        // Configuración de Echo para Pusher
         window.Pusher = Pusher;
         window.Echo = new Echo({
-            broadcaster: 'reverb',
-            key: "{{ config('broadcasting.connections.reverb.key') }}",
-            wsHost: "{{ config('broadcasting.connections.reverb.options.host') }}",
-            wsPort: {{ config('broadcasting.connections.reverb.options.port', 80) }},
-            wssPort: {{ config('broadcasting.connections.reverb.options.port', 443) }},
-            forceTLS: ({{ config('broadcasting.connections.reverb.options.scheme', 'https') }} === 'https'),
+            broadcaster: 'pusher',
+            key: "{{ config('broadcasting.connections.pusher.key') }}",
+            cluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
+            forceTLS: true,
             enabledTransports: ['ws', 'wss'],
         });
 

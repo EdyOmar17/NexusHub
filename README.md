@@ -96,13 +96,10 @@ Para subir NexusHub a internet, asegúrate de seguir estos pasos adicionales:
       ```bash
       * * * * * cd /ruta-a-tu-proyecto && php artisan schedule:run >> /dev/null 2>&1
       ```
-3.  **Servidor de WebSockets (Reverb)**:
-    - Inicia el servidor de Reverb en producción:
-      ```bash
-      php artisan reverb:start
-      ```
-    - Se recomienda usar un monitor de procesos como **Supervisor** para mantener `reverb:start` y `queue:work` siempre activos.
-4.  **Optimización**:
+3. **Servidor de WebSockets (Pusher)**:
+    - NexusHub utiliza Pusher para notificaciones en tiempo real.
+    - Asegúrate de tener configuradas tus llaves de Pusher en el archivo `.env`.
+4. **Optimización**:
     ```bash
     php artisan config:cache
     php artisan route:cache
