@@ -105,17 +105,87 @@
     <!-- WebSocket config for Laravel Echo with Reverb -->
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.min.js"></script>
+
     <script>
+        // Configuración de Echo para tiempo real
         window.Pusher = Pusher;
         window.Echo = new Echo({
             broadcaster: 'reverb',
-            key: '{{ env('REVERB_APP_KEY') }}',
-            wsHost: '{{ env('REVERB_HOST', 'localhost') }}',
-            wsPort: {{ env('REVERB_PORT', 8080) }},
-            wssPort: {{ env('REVERB_PORT', 8080) }},
-            forceTLS: {{ env('REVERB_SCHEME', 'http') === 'https' ? 'true' : 'false' }},
+            key: "{{ config('broadcasting.connections.reverb.key') }}",
+            wsHost: "{{ config('broadcasting.connections.reverb.options.host') }}",
+            wsPort: {{ config('broadcasting.connections.reverb.options.port', 80) }},
+            wssPort: {{ config('broadcasting.connections.reverb.options.port', 443) }},
+            forceTLS: ({{ config('broadcasting.connections.reverb.options.scheme', 'https') }} === 'https'),
             enabledTransports: ['ws', 'wss'],
         });
+
+        // Escuchar cambios de estado de sitios web
+        window.Echo.channel('websites-status')
+            .listen('WebsiteStatusChanged', (e) => {
+                // Notificación visual rápida
+                const statusText = e.status === 'operativa' ? 'está OPERATIVA' : 'ha CAÍDO';
+                const statusColor = e.status === 'operativa' ? '#10b981' : '#ea5455';
+                
+                // Si estamos en el Dashboard, actualizar la UI sin recargar
+                const siteItem = document.querySelector(`.website-item[data-id="${e.id}"]`);
+                if (siteItem) {
+                    const badge = siteItem.querySelector('.status-badge');
+                    if (badge) {
+                        badge.className = `status-badge badge-${e.status}`;
+                        badge.textContent = e.status === 'operativa' ? '{{ __("Operativa") }}' : '{{ __("Suspendida") }}';
+                    }
+                }
+
+                // Mostrar un pequeño aviso tipo Toast (puedes mejorar esto con una librería como Toastr o SweetAlert2)
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: rgba(15, 23, 42, 0.9);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid ${statusColor};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    z-index: 9999;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                    animation: slideUp 0.5s ease-out;
+                `;
+                
+                const icon = e.status === 'operativa' ? 'check-circle' : 'shield-alert';
+                toast.innerHTML = `
+                    <i data-lucide="${icon}" style="color: ${statusColor}"></i>
+                    <div>
+                        <strong style="display: block; font-size: 0.9rem;">${e.domain}</strong>
+                        <span style="font-size: 0.8rem; opacity: 0.8;">${statusText}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    toast.style.animation = 'slideDown 0.5s ease-in forwards';
+                    setTimeout(() => toast.remove(), 500);
+                }, 5000);
+            });
+    </script>
+
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+    </style>
+    <script>
         window.userId = {{ auth()->id() ?? 'null' }};
     </script>
     

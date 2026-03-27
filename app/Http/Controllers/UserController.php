@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -39,6 +40,15 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'create_user',
+            'description' => "Creó un nuevo usuario: {$user->email}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'metadata' => ['new_user_id' => $user->id]
+        ]);
+
         if ($request->has('send_credentials')) {
             \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $request->password));
         }
@@ -52,7 +62,7 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(User $user)
+    public function destroy(User $user, Request $request)
     {
         // Prevent admin from deleting themselves
         if ($user->email === 'edy.omar2005@gmail.com') {
@@ -64,7 +74,16 @@ class UserController extends Controller
             return back()->with('error', 'No puedes eliminar tu propio usuario mientras estás en sesión.');
         }
 
+        $email = $user->email;
         $user->delete();
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'delete_user',
+            'description' => "Eliminó al usuario: {$email}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
 
         return back()->with('success', 'Usuario eliminado correctamente del sistema NexusHub.');
     }

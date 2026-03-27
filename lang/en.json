@@ -88,5 +88,14 @@
     "¿Eliminar Usuario?": "Delete User?",
     "¿Estás seguro de que deseas eliminar a": "Are you sure you want to delete",
     "Este usuario ya no podrá acceder al sistema NexusHub.": "This user will no longer be able to access the NexusHub system.",
-    "Eliminar Usuario": "Delete User"
+    "Eliminar Usuario": "Delete User",
+    "Terminal de Gestión de Usuarios": "User Management Terminal",
+    "Administra los accesos autorizados al sistema NexusHub.": "Manage authorized access to the NexusHub system.",
+    "Análisis de Estabilidad Global (Últimas 24h)": "Global Stability Analysis (Last 24h)",
+    "Bitácora de Seguridad del Nexo": "Nexus Security Audit Log",
+    "Registro cronológico de actividades críticas y accesos.": "Chronological record of critical activities and accesses.",
+    "Modo Mantenimiento": "Maintenance Mode",
+    "Mantenimiento": "Maintenance",
+    "No hay registros en la bitácora aún.": "No audit logs found yet.",
+    "Uptime": "Uptime"
 }

@@ -124,6 +124,69 @@
         font-size: 0.8rem;
     }
 
+    /* Audit Log Styles */
+    .audit-log-container {
+        margin-bottom: 4rem;
+        padding: 2.5rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+    }
+
+    .audit-log-table-wrapper {
+        overflow-x: auto;
+        margin-top: 1.5rem;
+    }
+
+    .audit-log-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .audit-log-table th {
+        padding: 1rem;
+        color: var(--primary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+    }
+
+    .audit-log-table td {
+        padding: 1rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .audit-log-table tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .log-action-badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .log-action-create { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .log-action-update { background: rgba(0, 242, 254, 0.1); color: var(--primary); }
+    .log-action-delete { background: rgba(234, 84, 85, 0.1); color: var(--danger); }
+    .log-action-login { background: rgba(165, 180, 252, 0.1); color: #a5b4fc; }
+
+    /* Chart Styles */
+    .uptime-chart-container {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
     .user-card-actions {
         display: flex;
         justify-content: flex-end;
@@ -190,11 +253,26 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <span class="stat-value">99.9%</span>
+            <span class="stat-value">{{ number_format($websites->where('website_status', 'operativa')->count() / (count($websites) ?: 1) * 100, 1) }}%</span>
             <span class="stat-label">{{ __('Uptime') }}</span>
         </div>
     </div>
 </section>
+
+@if(auth()->user()->email === 'edy.omar2005@gmail.com')
+<!-- Uptime Chart Section (Admin Only) -->
+<section class="uptime-chart-container glass-card" style="margin-bottom: 3rem;">
+    <div class="section-header" style="border-bottom: 1px solid rgba(0, 242, 254, 0.1); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div class="section-title" style="margin-bottom: 0; font-size: 1.1rem;">
+            <i data-lucide="activity" style="margin-right: 10px; color: var(--primary);"></i>
+            {{ __('Análisis de Estabilidad Global (Últimas 24h)') }}
+        </div>
+    </div>
+    <div style="height: 250px;">
+        <canvas id="uptimeChart"></canvas>
+    </div>
+</section>
+@endif
 
 @if(auth()->user()->email === 'edy.omar2005@gmail.com')
 <!-- User Management Section (Admin Only) -->
@@ -248,6 +326,67 @@
 </section>
 @endif
 
+@if(auth()->user()->email === 'edy.omar2005@gmail.com')
+<!-- Audit Log Section (Admin Only) -->
+<section class="audit-log-container glass-card" id="audit-logs">
+    <div class="section-header" style="border-bottom: 1px solid rgba(0, 242, 254, 0.1); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div class="section-title" style="margin-bottom: 0;">
+            <i data-lucide="scroll-text" style="margin-right: 12px; color: var(--primary);"></i>
+            {{ __('Bitácora de Seguridad del Nexo') }}
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">{{ __('Registro cronológico de actividades críticas y accesos.') }}</p>
+    </div>
+
+    <div class="audit-log-table-wrapper">
+        <table class="audit-log-table">
+            <thead>
+                <tr>
+                    <th>{{ __('Usuario') }}</th>
+                    <th>{{ __('Acción') }}</th>
+                    <th>{{ __('Descripción') }}</th>
+                    <th>{{ __('IP') }}</th>
+                    <th>{{ __('Fecha') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($auditLogs as $log)
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: rgba(165, 180, 252, 0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="user" style="width: 14px; height: 14px; color: #a5b4fc;"></i>
+                            </div>
+                            <span>{{ $log->user->name ?? 'Sistema' }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        @php
+                            $actionClass = 'log-action-update';
+                            if(str_contains($log->action, 'create')) $actionClass = 'log-action-create';
+                            if(str_contains($log->action, 'delete')) $actionClass = 'log-action-delete';
+                            if(str_contains($log->action, 'login')) $actionClass = 'log-action-login';
+                        @endphp
+                        <span class="log-action-badge {{ $actionClass }}">{{ $log->action }}</span>
+                    </td>
+                    <td>{{ $log->description }}</td>
+                    <td style="font-family: monospace; font-size: 0.8rem;">{{ $log->ip_address }}</td>
+                    <td style="font-size: 0.8rem;">{{ $log->created_at->diffForHumans() }}</td>
+                </tr>
+                @endforeach
+                @if($auditLogs->isEmpty())
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <i data-lucide="database-zap" style="width: 40px; height: 40px; margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>{{ __('No hay registros en la bitácora aún.') }}</p>
+                    </td>
+                </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+</section>
+@endif
+
 <!-- Server Grid -->
 <section class="server-grid">
     <div class="section-title">{{ __('Servidores Activos') }}</div>
@@ -297,15 +436,23 @@
              data-priority="{{ $website->priority }}"
              data-backup="{{ $website->has_backup ? '1' : '0' }}"
              data-hacked="{{ $website->is_hacked ? '1' : '0' }}"
-             data-hacked-desc="{{ $website->hacked_description ?? '' }}">
+             data-hacked-desc="{{ $website->hacked_description ?? '' }}"
+             data-maintenance="{{ $website->is_maintenance ? '1' : '0' }}">
             <div class="priority-dot priority-{{ $website->priority }}"></div>
             <div class="site-icon">
-                <i data-lucide="globe"></i>
+                <i data-lucide="{{ $website->is_maintenance ? 'tool' : 'globe' }}"></i>
             </div>
             <div class="site-info">
                 <span class="site-name">{{ $website->domain }}</span>
                 <div class="site-meta">
-                    <span class="status-badge badge-{{ $website->website_status }}">{{ $website->website_status === 'operativa' ? __('Operativa') : __('Suspendida') }}</span>
+                    @if($website->is_maintenance)
+                        <span class="status-badge" style="background: rgba(255, 184, 0, 0.1); color: #ffb800; border: 1px solid rgba(255, 184, 0, 0.2);">
+                            <i data-lucide="tool" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                            {{ __('Mantenimiento') }}
+                        </span>
+                    @else
+                        <span class="status-badge badge-{{ $website->website_status }}">{{ $website->website_status === 'operativa' ? __('Operativa') : __('Suspendida') }}</span>
+                    @endif
                     @if($website->has_backup) <span class="meta-badge backup"><i data-lucide="database"></i> Backup</span> @endif
                     @if($website->is_hacked) <span class="meta-badge hacked"><i data-lucide="shield-alert"></i> HACKED</span> @endif
                 </div>
@@ -413,6 +560,10 @@
                     <input type="checkbox" name="is_hacked" id="modal-hacked">
                     <span>{{ __('¿Ha sido hackeado?') }}</span>
                 </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" name="is_maintenance" id="modal-maintenance">
+                    <span style="color: var(--warning);">{{ __('Modo Mantenimiento') }}</span>
+                </label>
             </div>
             
             <div class="form-group d-none" id="hacked-desc-container" style="margin-top: 1rem;">
@@ -479,6 +630,9 @@
 @endsection
 
 @section('scripts')
+<!-- Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     // Password visibility toggle for modal
     document.addEventListener('click', function (e) {
@@ -522,6 +676,74 @@
             userDeleteModal.classList.add('d-none');
         }
     });
+
+    // Gráfico de Uptime
+    const ctx = document.getElementById('uptimeChart');
+    let uptimeChart;
+
+    if (ctx) {
+        const getChartColors = () => {
+            const isLight = document.body.classList.contains('light-theme');
+            return {
+                grid: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)',
+                ticks: isLight ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                pointBorder: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)'
+            };
+        };
+
+        const colors = getChartColors();
+        
+        uptimeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($uptimeHistory->map(fn($h) => $h->created_at->format('H:i'))->values()) !!},
+                datasets: [{
+                    label: 'Uptime %',
+                    data: {!! json_encode($uptimeHistory->map(fn($h) => $h->uptime_percentage)->values()) !!},
+                    borderColor: '#00f2fe',
+                    backgroundColor: 'rgba(0, 242, 254, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#00f2fe',
+                    pointBorderColor: colors.pointBorder,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 95,
+                        max: 100,
+                        grid: { color: colors.grid },
+                        ticks: { color: colors.ticks, font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: colors.ticks, font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Observar cambios de tema para actualizar el gráfico
+        const observer = new MutationObserver(() => {
+            const newColors = getChartColors();
+            uptimeChart.options.scales.y.grid.color = newColors.grid;
+            uptimeChart.options.scales.y.ticks.color = newColors.ticks;
+            uptimeChart.options.scales.x.ticks.color = newColors.ticks;
+            uptimeChart.data.datasets[0].pointBorderColor = newColors.pointBorder;
+            uptimeChart.update();
+        });
+
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
     @endif
 </script>
 @endsection

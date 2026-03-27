@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         status: document.getElementById('modal-status'),
         backup: document.getElementById('modal-backup'),
         hacked: document.getElementById('modal-hacked'),
-        hackedDesc: document.getElementById('modal-hacked-desc')
+        hackedDesc: document.getElementById('modal-hacked-desc'),
+        maintenance: document.getElementById('modal-maintenance')
     };
     
     const hackedDescContainer = document.getElementById('hacked-desc-container');
@@ -181,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (fFields.status) fFields.status.value = data.status;
             if (fFields.backup) fFields.backup.checked = data.backup === '1';
             if (fFields.hacked) fFields.hacked.checked = data.hacked === '1';
+            if (fFields.maintenance) fFields.maintenance.checked = data.maintenance === '1';
             
             if (fFields.hackedDesc) fFields.hackedDesc.value = data.hackedDesc || '';
             if (hackedDescContainer) {
@@ -332,7 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     priority: item.getAttribute('data-priority'),
                     backup: item.getAttribute('data-backup'),
                     hacked: item.getAttribute('data-hacked'),
-                    hackedDesc: item.getAttribute('data-hacked-desc')
+                    hackedDesc: item.getAttribute('data-hacked-desc'),
+                    maintenance: item.getAttribute('data-maintenance')
                 };
                 openModal('edit', data);
             }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Website;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
@@ -19,7 +20,7 @@ class WebsiteController extends Controller
             'hacked_description' => 'nullable|string',
         ]);
 
-        Website::create([
+        $website = Website::create([
             'domain' => $validated['domain'],
             'server_name' => $validated['server_name'],
             'username' => $validated['username'],
@@ -30,6 +31,16 @@ class WebsiteController extends Controller
             'is_hacked' => $request->has('is_hacked'),
             'hacked_description' => $request->has('is_hacked') ? $validated['hacked_description'] : null,
             'is_working' => ($validated['website_status'] === 'operativa'),
+            'is_maintenance' => $request->has('is_maintenance'),
+        ]);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'create_website',
+            'description' => "Creó el sitio web: {$website->domain}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'metadata' => ['website_id' => $website->id]
         ]);
 
         return redirect()->back()->with('success', 'Sitio web creado correctamente.');
@@ -58,14 +69,34 @@ class WebsiteController extends Controller
             'is_hacked' => $request->has('is_hacked'),
             'hacked_description' => $request->has('is_hacked') ? $validated['hacked_description'] : null,
             'is_working' => ($validated['website_status'] === 'operativa'),
+            'is_maintenance' => $request->has('is_maintenance'),
+        ]);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'update_website',
+            'description' => "Actualizó el sitio web: {$website->domain}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'metadata' => ['website_id' => $website->id]
         ]);
 
         return redirect()->back()->with('success', 'Sitio web actualizado correctamente.');
     }
 
-    public function destroy(Website $website)
+    public function destroy(Website $website, Request $request)
     {
+        $domain = $website->domain;
         $website->delete();
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'delete_website',
+            'description' => "Eliminó el sitio web: {$domain}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
         return redirect()->back()->with('success', 'Sitio web eliminado correctamente.');
     }
 }

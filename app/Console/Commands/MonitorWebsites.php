@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Website;
+use App\Models\UptimeHistory;
 use Illuminate\Support\Facades\Http;
 use App\Events\WebsiteStatusChanged;
 
@@ -28,7 +29,7 @@ class MonitorWebsites extends Command
      */
     public function handle()
     {
-        $websites = Website::all();
+        $websites = Website::where('is_maintenance', false)->get();
 
         foreach ($websites as $website) {
             $url = str_starts_with($website->domain, 'http') ? $website->domain : 'https://' . $website->domain;
@@ -58,11 +59,25 @@ class MonitorWebsites extends Command
                 ]);
 
                 // Fire event
-                // broadcast(new WebsiteStatusChanged($website));
+                broadcast(new WebsiteStatusChanged($website));
+                
                 $users = \App\Models\User::all();
                 \Illuminate\Support\Facades\Notification::send($users, new \App\Notifications\WebsiteStatusNotification($website, $newStatus));
                 $this->info("Status changed for {$website->domain} to {$newStatus}");
             }
         }
+
+        // Record global uptime history
+        $total = Website::count();
+        $online = Website::where('website_status', 'operativa')->count();
+        $percentage = $total > 0 ? ($online / $total) * 100 : 100;
+
+        UptimeHistory::create([
+            'uptime_percentage' => $percentage,
+            'total_sites' => $total,
+            'online_sites' => $online,
+        ]);
+
+        $this->info("Global uptime recorded: {$percentage}%");
     }
 }

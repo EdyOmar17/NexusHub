@@ -17,7 +17,10 @@ El sistema ofrece un control total sobre el ecosistema digital de la organizaci�
     - Gestión de perfil de administrador (Nombre y Correo).
     - Seguridad avanzada con cambio de contraseñas (incluye toggle de visibilidad).
     - Preferencias globales (Idioma, Notificaciones).
-- **Administración de Usuarios**: Creación de nuevos administradores con envío automático de credenciales.
+- **Administración de Usuarios**: Gestión avanzada de administradores permitiendo visualizar y eliminar accesos (exclusivo para el Admin Principal).
+- **Bitácora de Seguridad (Audit Log)**: Registro detallado de acciones críticas, incluyendo IPs y agentes de usuario para auditoría.
+- **Gráficos de Estabilidad**: Análisis visual del Uptime global en las últimas 24 horas mediante gráficas dinámicas.
+- **Modo Mantenimiento**: Capacidad de pausar el monitoreo individual de sitios para realizar trabajos técnicos sin disparar alertas.
 - **Sistema de Seguridad de Acceso**: 
     - Login seguro con opción de "Recordar sesión".
     - Flujo completo de recuperación de contraseña (solicitud de enlace y restablecimiento).
@@ -78,6 +81,33 @@ El sistema sigue el patrón **MVC (Modelo-Vista-Controlador)**, asegurando un c�
     ```bash
     npm run build
     php artisan serve
+    ```
+
+## 🚀 Despliegue en Producción
+
+Para subir NexusHub a internet, asegúrate de seguir estos pasos adicionales:
+
+1.  **Variables de Entorno**:
+    - Cambia `APP_ENV` a `production`.
+    - Cambia `APP_DEBUG` a `false`.
+    - Configura correctamente tu proveedor de correo (SMTP) para el envío de credenciales.
+2.  **Programador de Tareas (Cron Job)**:
+    - Para que el monitor funcione automáticamente, añade esta entrada al Cron de tu servidor:
+      ```bash
+      * * * * * cd /ruta-a-tu-proyecto && php artisan schedule:run >> /dev/null 2>&1
+      ```
+3.  **Servidor de WebSockets (Reverb)**:
+    - Inicia el servidor de Reverb en producción:
+      ```bash
+      php artisan reverb:start
+      ```
+    - Se recomienda usar un monitor de procesos como **Supervisor** para mantener `reverb:start` y `queue:work` siempre activos.
+4.  **Optimización**:
+    ```bash
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    npm run build
     ```
 
 ---

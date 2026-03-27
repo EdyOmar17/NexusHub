@@ -88,5 +88,14 @@
     "¿Eliminar Usuario?": "¿Eliminar Usuario?",
     "¿Estás seguro de que deseas eliminar a": "¿Estás seguro de que deseas eliminar a",
     "Este usuario ya no podrá acceder al sistema NexusHub.": "Este usuario ya no podrá acceder al sistema NexusHub.",
-    "Eliminar Usuario": "Eliminar Usuario"
+    "Eliminar Usuario": "Eliminar Usuario",
+    "Terminal de Gestión de Usuarios": "Terminal de Gestión de Usuarios",
+    "Administra los accesos autorizados al sistema NexusHub.": "Administra los accesos autorizados al sistema NexusHub.",
+    "Análisis de Estabilidad Global (Últimas 24h)": "Análisis de Estabilidad Global (Últimas 24h)",
+    "Bitácora de Seguridad del Nexo": "Bitácora de Seguridad del Nexo",
+    "Registro cronológico de actividades críticas y accesos.": "Registro cronológico de actividades críticas y accesos.",
+    "Modo Mantenimiento": "Modo Mantenimiento",
+    "Mantenimiento": "Mantenimiento",
+    "No hay registros en la bitácora aún.": "No hay registros en la bitácora aún.",
+    "Uptime": "Uptime"
 }

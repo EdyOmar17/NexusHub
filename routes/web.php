@@ -34,10 +34,14 @@ Route::get('/dashboard', function () {
     }
     $websites = App\Models\Website::all();
     $users = [];
+    $auditLogs = [];
+    $uptimeHistory = [];
     if (Auth::user()->email === 'edy.omar2005@gmail.com') {
         $users = App\Models\User::all();
+        $auditLogs = App\Models\AuditLog::with('user')->latest()->take(50)->get();
+        $uptimeHistory = App\Models\UptimeHistory::latest()->take(24)->get()->reverse();
     }
-    return view('dashboard', compact('websites', 'users'));
+    return view('dashboard', compact('websites', 'users', 'auditLogs', 'uptimeHistory'));
 })->name('dashboard');
 
 // Settings routes

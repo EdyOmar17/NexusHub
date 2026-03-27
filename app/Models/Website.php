@@ -19,6 +19,7 @@ class Website extends Model
         'password',
         'priority',
         'website_status',
-        'server_name'
+        'server_name',
+        'is_maintenance'
     ];
 }
